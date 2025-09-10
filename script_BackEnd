@@ -6,6 +6,16 @@ from datetime import datetime
 SOURCE = "/home/valcann/backupsFrom"
 DEST = "/home/valcann/backupsTo"
 
+#Verifica se o caminho existe antes de executar
+
+if(os.path.exists(SOURCE) == False):
+    os.makedirs(SOURCE)
+
+if(os.path.exists(DEST) == False):
+    os.makedirs(DEST)
+
+#------------------------------------
+
 LOG_FROM = "/home/valcann/backupsFrom.log"
 LOG_TO = "/home/valcann/backupsTo.log"
 
@@ -35,7 +45,7 @@ with open(LOG_FROM, "w") as logf, open(LOG_TO, "w") as logt:
             size, created, modified = file_info(filepath)
             age_days = (now - created.timestamp()) / 86400
 
-            log_line = f"{filename} | {size} bytes | Criado: {created} | Modificado: {modified}\n"
+            log_line = f"{filename} - {size} bytes - Criado: {created} - Modificado: {modified}\n"
             logf.write(log_line)
 
             if age_days > 3:
