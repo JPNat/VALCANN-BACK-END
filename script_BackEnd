@@ -1,0 +1,47 @@
+import os
+import shutil
+import time
+from datetime import datetime
+
+SOURCE = "/home/valcann/backupsFrom"
+DEST = "/home/valcann/backupsTo"
+
+LOG_FROM = "/home/valcann/backupsFrom.log"
+LOG_TO = "/home/valcann/backupsTo.log"
+
+
+#Pega informações dos arquivos
+
+def file_info(path):
+
+    stat = os.stat(path)
+    size = stat.st_size
+    created = datetime.fromtimestamp(stat.st_ctime)
+    modified = datetime.fromtimestamp(stat.st_mtime)
+
+    return size, created, modified
+
+
+now = time.time()
+
+
+with open(LOG_FROM, "w") as logf, open(LOG_TO, "w") as logt:
+
+    for filename in os.listdir(SOURCE):
+
+        filepath = os.path.join(SOURCE, filename)
+
+        if os.path.isfile(filepath):
+            size, created, modified = file_info(filepath)
+            age_days = (now - created.timestamp()) / 86400
+
+            log_line = f"{filename} | {size} bytes | Criado: {created} | Modificado: {modified}\n"
+            logf.write(log_line)
+
+            if age_days > 3:
+                os.remove(filepath)
+
+            else:
+                shutil.copy2(filepath, DEST)
+                logt.write(log_line)
+
